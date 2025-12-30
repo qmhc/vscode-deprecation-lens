@@ -15,7 +15,7 @@
     "test": "vitest run",
     "vscode:prepublish": "pnpm run build",
     "changeset": "changeset",
-    "version": "changeset version --ignore @deprecation-lens/core --ignore @deprecation-lens/ui",
+    "version": "changeset version",
     "release": "vsce publish --no-dependencies"
   },
   "main": "./dist/extension.js",
