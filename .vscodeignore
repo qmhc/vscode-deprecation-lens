@@ -4,8 +4,8 @@
 .husky/**
 .changeset/**
 src/**
-packages/**/src/**
-packages/**/node_modules/**
+scripts/**
+packages/**
 node_modules/**
 .gitignore
 .gitattributes
@@ -14,13 +14,11 @@ node_modules/**
 .editorconfig
 .commitlintrc.js
 .eslintcache
+.DS_Store
 eslint.config.ts
 vitest.config.ts
 pnpm-lock.yaml
 pnpm-workspace.yaml
 vsc-extension-quickstart.md
-**/tsconfig.json
-**/.eslintrc.json
 **/*.map
-**/*.ts
-!dist/**
+*.vsix
