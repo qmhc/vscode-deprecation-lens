@@ -51,7 +51,7 @@
   },
   "displayName": "Deprecation Lens",
   "categories": [
-    "Other"
+    "Linters"
   ],
   "icon": "assets/logo.png",
   "publisher": "qmhc",
