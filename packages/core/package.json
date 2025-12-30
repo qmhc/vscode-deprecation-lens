@@ -1,0 +1,14 @@
+{
+  "name": "@deprecation-lens/core",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./src/extension.ts",
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.3",
+    "@types/vscode": "^1.85.0"
+  }
+}

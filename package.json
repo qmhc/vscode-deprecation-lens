@@ -1,0 +1,117 @@
+{
+  "name": "deprecation-lens",
+  "version": "0.0.1",
+  "packageManager": "pnpm@10.26.2",
+  "license": "MIT",
+  "author": "qmhc",
+  "description": "Dynamically collect and display all deprecated usages in your project",
+  "scripts": {
+    "compile": "pnpm -C packages/core run compile",
+    "compile:ui": "pnpm -C packages/ui run build",
+    "build": "pnpm run compile && pnpm run compile:ui",
+    "watch": "pnpm -C packages/core run watch",
+    "lint": "eslint --cache \"**/*.{js,cjs,mjs,ts,tsx}\"",
+    "prettier": "prettier --write \"**/*.{js,cjs,mjs,ts,tsx,json,css,scss,html,md}\"",
+    "test": "vitest run",
+    "vscode:prepublish": "pnpm run build"
+  },
+  "main": "./dist/extension.js",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qmhc/vscode-deprecation-lens"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.2.0",
+    "@commitlint/types": "^20.2.0",
+    "@eslint/js": "^9.39.2",
+    "@types/node": "^22.19.3",
+    "@types/vscode": "^1.85.0",
+    "@vexip-ui/commitlint-config": "^0.5.0",
+    "@vexip-ui/eslint-config": "^1.3.0",
+    "@vexip-ui/prettier-config": "^1.1.0",
+    "@vscode/codicons": "^0.0.36",
+    "eslint": "^9.39.2",
+    "husky": "^9.1.7",
+    "jiti": "^2.6.1",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.7.4",
+    "vitest": "^4.0.16"
+  },
+  "dependencies": {
+    "minimatch": "^10.0.1",
+    "typescript": "~5.9.3"
+  },
+  "displayName": "Deprecation Lens",
+  "categories": [
+    "Other"
+  ],
+  "icon": "assets/logo.png",
+  "publisher": "qmhc",
+  "contributes": {
+    "configuration": {
+      "title": "Deprecation Lens",
+      "properties": {
+        "deprecationLens.includePattern": {
+          "type": "string",
+          "default": "",
+          "description": "Glob pattern for files to include in scan (e.g., src/**/*.ts)"
+        },
+        "deprecationLens.excludePattern": {
+          "type": "string",
+          "default": "",
+          "description": "Glob pattern for files to exclude from scan (e.g., **/node_modules/**)"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "deprecationLens.refreshCurrent",
+        "title": "Refresh Current Files",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "deprecationLens.gotoLocation",
+        "title": "Go to Location"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "deprecationLens.refreshCurrent",
+          "when": "view == deprecationLensCurrentView",
+          "group": "navigation"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "deprecationLens",
+          "title": "Deprecation Lens",
+          "icon": "assets/view-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "deprecationLensCurrentView",
+          "name": "Current Deprecations"
+        }
+      ],
+      "deprecationLens": [
+        {
+          "type": "webview",
+          "id": "deprecationLensGlobalView",
+          "name": "Project Deprecations"
+        }
+      ]
+    }
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ]
+}

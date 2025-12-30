@@ -1,0 +1,19 @@
+# Build output
+out/
+dist/
+
+# Dependencies
+node_modules/
+
+# Package files
+*.vsix
+
+# Lock files
+pnpm-lock.yaml
+
+# Cache
+.cache/
+.eslintcache
+
+# Coverage
+coverage/
