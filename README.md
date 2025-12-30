@@ -16,25 +16,6 @@ A VSCode extension that dynamically collects and displays all usages of `@deprec
 - `.mjs` / `.mts`
 - `.cjs` / `.cts`
 
-## Installation
-
-### From VSIX
-
-```bash
-code --install-extension deprecation-lens-x.x.x.vsix
-```
-
-### Build from Source
-
-```bash
-git clone https://github.com/qmhc/vscode-deprecation-lens.git
-cd vscode-deprecation-lens
-pnpm install
-pnpm run build
-```
-
-Then press `F5` to launch the Extension Development Host for debugging.
-
 ## Usage
 
 ### Explorer Panel (Current Deprecations)
