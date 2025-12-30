@@ -12,6 +12,13 @@ declare function acquireVsCodeApi(): {
 
 const vscode = acquireVsCodeApi()
 
+// 检测宿主容器是否有 padding，没有则自行添加
+const bodyStyle = getComputedStyle(document.body)
+const hostPadding = parseFloat(bodyStyle.paddingLeft) + parseFloat(bodyStyle.paddingRight)
+if (hostPadding === 0) {
+  document.body.classList.add('no-host-padding')
+}
+
 // 初始化应用
 new App(document.getElementById('app')!, vscode)
 

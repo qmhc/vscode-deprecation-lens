@@ -12,6 +12,11 @@ body {
   overflow: hidden;
 }
 
+/* 宿主容器无 padding 时自行添加 */
+body.no-host-padding {
+  padding: 0 8px;
+}
+
 #app {
   display: flex;
   flex-direction: column;

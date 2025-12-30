@@ -18,9 +18,9 @@ A VSCode extension that dynamically collects and displays all usages of `@deprec
 
 ## Usage
 
-### Explorer Panel (Current Deprecations)
+### Problems Panel (Current File)
 
-Located in the Explorer sidebar, this panel shows deprecated usages in currently open files. It updates automatically as you open/close files.
+Deprecated usages in open files are automatically reported to VSCode's Problems panel. Click any item to jump to its location.
 
 ### Activity Bar Panel (Project Deprecations)
 

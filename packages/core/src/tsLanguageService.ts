@@ -1,7 +1,10 @@
-import * as ts from 'typescript'
+import { dirname, relative } from 'node:path'
+
+import { existsSync, readFileSync } from 'node:fs'
+
+import ts from 'typescript'
 import * as vscode from 'vscode'
-import * as path from 'path'
-import * as fs from 'fs'
+
 import { minimatch } from 'minimatch'
 
 import type { DeprecatedUsage, FileDeprecations } from './types'
@@ -49,7 +52,7 @@ export async function scanWithLanguageService(
     return []
   }
 
-  const configDir = path.dirname(configPath)
+  const configDir = dirname(configPath)
   const parsedConfig = ts.parseJsonConfigFileContent(configFile.config, ts.sys, configDir)
 
   if (parsedConfig.errors.length > 0) {
@@ -75,10 +78,10 @@ export async function scanWithLanguageService(
       if (cached) {
         content = cached.content
       } else {
-        if (!fs.existsSync(fileName)) {
+        if (!existsSync(fileName)) {
           return undefined
         }
-        content = fs.readFileSync(fileName, 'utf-8')
+        content = readFileSync(fileName, 'utf-8')
         files.set(fileName, { version: 0, content })
       }
 
@@ -100,7 +103,7 @@ export async function scanWithLanguageService(
   let filesToScan = parsedConfig.fileNames
   if (includePattern || excludePattern) {
     filesToScan = parsedConfig.fileNames.filter(fileName => {
-      const relativePath = path.relative(rootPath, fileName)
+      const relativePath = relative(rootPath, fileName)
 
       if (includePattern && !minimatch(relativePath, includePattern, { matchBase: true })) {
         return false

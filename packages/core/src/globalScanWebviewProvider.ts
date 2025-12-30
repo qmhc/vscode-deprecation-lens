@@ -1,5 +1,6 @@
+import { basename, dirname, relative } from 'node:path'
+
 import * as vscode from 'vscode'
-import * as path from 'path'
 
 import { scanWithLanguageService } from './tsLanguageService'
 
@@ -139,15 +140,15 @@ export class GlobalScanWebviewProvider implements vscode.WebviewViewProvider {
             // 流式发送每个文件的结果
             const workspaceFolder = vscode.workspace.getWorkspaceFolder(file.uri)
             const relativePath = workspaceFolder
-              ? path.relative(workspaceFolder.uri.fsPath, file.uri.fsPath)
+              ? relative(workspaceFolder.uri.fsPath, file.uri.fsPath)
               : file.uri.fsPath
 
             this.view?.webview.postMessage({
               type: 'scanResultAppend',
               file: {
                 uri: file.uri.toString(),
-                fileName: path.basename(file.uri.fsPath),
-                dirPath: path.dirname(relativePath) === '.' ? '' : path.dirname(relativePath),
+                fileName: basename(file.uri.fsPath),
+                dirPath: dirname(relativePath) === '.' ? '' : dirname(relativePath),
                 usages: file.usages.map(u => ({
                   line: u.range.start.line + 1,
                   col: u.range.start.character + 1,
@@ -171,13 +172,13 @@ export class GlobalScanWebviewProvider implements vscode.WebviewViewProvider {
       files: sortedResults.map(file => {
         const workspaceFolder = vscode.workspace.getWorkspaceFolder(file.uri)
         const relativePath = workspaceFolder
-          ? path.relative(workspaceFolder.uri.fsPath, file.uri.fsPath)
+          ? relative(workspaceFolder.uri.fsPath, file.uri.fsPath)
           : file.uri.fsPath
 
         return {
           uri: file.uri.toString(),
-          fileName: path.basename(file.uri.fsPath),
-          dirPath: path.dirname(relativePath) === '.' ? '' : path.dirname(relativePath),
+          fileName: basename(file.uri.fsPath),
+          dirPath: dirname(relativePath) === '.' ? '' : dirname(relativePath),
           usages: file.usages.map(u => ({
             line: u.range.start.line + 1,
             col: u.range.start.character + 1,

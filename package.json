@@ -75,24 +75,10 @@
     },
     "commands": [
       {
-        "command": "deprecationLens.refreshCurrent",
-        "title": "Refresh Current Files",
-        "icon": "$(refresh)"
-      },
-      {
         "command": "deprecationLens.gotoLocation",
         "title": "Go to Location"
       }
     ],
-    "menus": {
-      "view/title": [
-        {
-          "command": "deprecationLens.refreshCurrent",
-          "when": "view == deprecationLensCurrentView",
-          "group": "navigation"
-        }
-      ]
-    },
     "viewsContainers": {
       "activitybar": [
         {
@@ -103,12 +89,6 @@
       ]
     },
     "views": {
-      "explorer": [
-        {
-          "id": "deprecationLensCurrentView",
-          "name": "Current Deprecations"
-        }
-      ],
       "deprecationLens": [
         {
           "type": "webview",

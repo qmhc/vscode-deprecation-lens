@@ -1,9 +1,7 @@
 import * as vscode from 'vscode'
 
-import { CurrentFileProvider } from './currentFileProvider'
 import { GlobalScanWebviewProvider } from './globalScanWebviewProvider'
-
-let diagnosticsListener: vscode.Disposable | undefined
+import { DiagnosticsReporter } from './diagnosticsReporter'
 
 /**
  * 插件激活入口
@@ -11,24 +9,14 @@ let diagnosticsListener: vscode.Disposable | undefined
 export function activate(context: vscode.ExtensionContext) {
   console.info('[Deprecation Lens] Extension is activating...')
 
-  // 创建当前文件的树视图提供者（Explorer 面板）
-  const currentProvider = new CurrentFileProvider()
-  const currentTreeView = vscode.window.createTreeView('deprecationLensCurrentView', {
-    treeDataProvider: currentProvider,
-    showCollapseAll: true,
-  })
+  // 创建诊断上报器（上报到 Problems 面板）
+  const diagnosticsReporter = new DiagnosticsReporter()
 
   // 创建全局扫描的 Webview 提供者（独立面板）
   const globalWebviewProvider = new GlobalScanWebviewProvider(context.extensionUri)
   const globalWebviewDisposable = vscode.window.registerWebviewViewProvider(
     GlobalScanWebviewProvider.viewType,
     globalWebviewProvider,
-  )
-
-  // 注册刷新当前文件命令
-  const refreshCurrentCommand = vscode.commands.registerCommand(
-    'deprecationLens.refreshCurrent',
-    () => currentProvider.refresh(),
   )
 
   // 注册跳转命令
@@ -42,21 +30,10 @@ export function activate(context: vscode.ExtensionContext) {
     },
   )
 
-  // 监听诊断变化，按文件增量更新当前文件面板
-  diagnosticsListener = vscode.languages.onDidChangeDiagnostics(event => {
-    if (event.uris.length > 0) {
-      currentProvider.invalidateCache(event.uris)
-    } else {
-      currentProvider.refresh()
-    }
-  })
-
   context.subscriptions.push(
-    currentTreeView,
+    diagnosticsReporter,
     globalWebviewDisposable,
-    refreshCurrentCommand,
     gotoCommand,
-    diagnosticsListener,
   )
 
   console.info('[Deprecation Lens] Extension activated successfully')
@@ -65,6 +42,4 @@ export function activate(context: vscode.ExtensionContext) {
 /**
  * 插件停用
  */
-export function deactivate() {
-  diagnosticsListener?.dispose()
-}
+export function deactivate() {}
