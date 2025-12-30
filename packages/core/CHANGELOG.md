@@ -1,5 +1,15 @@
 # @deprecation-lens/core
 
+## 1.1.0
+
+### Minor Changes
+
+- 99c77ec: Migrate real-time deprecation detection from Explorer panel to Problems panel.
+
+### Patch Changes
+
+- ce617f3: Should inline dependencies when build.
+
 ## 1.0.1
 
 ### Patch Changes
