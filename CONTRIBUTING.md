@@ -39,15 +39,21 @@ Please follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ### Project Structure
 
-```
+```text
 vscode-deprecation-lens/
 ├── packages/
+│   ├── cli/           # CLI tool and programmatic API
+│   │   └── src/
+│   │       ├── cli.ts         # CLI entry point
+│   │       ├── scanner.ts     # Core scanning engine
+│   │       ├── reporter.ts    # Output formatters
+│   │       ├── types.ts       # Type definitions
+│   │       └── index.ts       # API exports
 │   ├── core/          # VSCode extension core
 │   │   └── src/
 │   │       ├── extension.ts           # Extension entry
-│   │       ├── currentFileProvider.ts # Explorer panel provider
 │   │       ├── globalScanWebviewProvider.ts # Activity Bar WebView
-│   │       ├── tsLanguageService.ts   # TypeScript scanning logic
+│   │       ├── tsLanguageService.ts   # Calls CLI scanner
 │   │       └── ...
 │   └── ui/            # WebView UI (Vite)
 │       └── src/

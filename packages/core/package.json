@@ -2,10 +2,13 @@
   "name": "@deprecation-lens/core",
   "version": "1.1.0",
   "private": true,
-  "main": "./src/extension.ts",
   "scripts": {
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./"
+  },
+  "main": "./src/extension.ts",
+  "dependencies": {
+    "@deprecation-lens/cli": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.19.3",

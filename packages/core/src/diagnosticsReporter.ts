@@ -23,18 +23,19 @@ export class DiagnosticsReporter implements vscode.Disposable {
   private disposables: vscode.Disposable[] = []
 
   /** 文件对应的 LanguageService 缓存 */
-  private serviceCache = new Map<string, {
-    service: ts.LanguageService,
-    files: Map<string, { version: number, content: string }>,
-  }>()
+  private serviceCache = new Map<
+    string,
+    {
+      service: ts.LanguageService,
+      files: Map<string, { version: number, content: string }>,
+    }
+  >()
 
   constructor() {
     this.diagnosticCollection = vscode.languages.createDiagnosticCollection('deprecation-lens')
 
     // 监听文档打开
-    this.disposables.push(
-      vscode.workspace.onDidOpenTextDocument(doc => this.analyzeDocument(doc)),
-    )
+    this.disposables.push(vscode.workspace.onDidOpenTextDocument(doc => this.analyzeDocument(doc)))
 
     // 监听文档修改
     this.disposables.push(
@@ -136,10 +137,12 @@ export class DiagnosticsReporter implements vscode.Disposable {
   /**
    * 创建 TypeScript LanguageService
    */
-  private createLanguageService(rootPath: string): {
-    service: ts.LanguageService,
-    files: Map<string, { version: number, content: string }>,
-  } | undefined {
+  private createLanguageService(rootPath: string):
+    | {
+      service: ts.LanguageService,
+      files: Map<string, { version: number, content: string }>,
+    }
+    | undefined {
     const configPath = ts.findConfigFile(rootPath, ts.sys.fileExists, 'tsconfig.json')
     if (!configPath) return undefined
 

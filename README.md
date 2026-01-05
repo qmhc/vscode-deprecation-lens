@@ -37,10 +37,25 @@ Click the Deprecation Lens icon in the Activity Bar to access the full project s
 
 The extension uses TypeScript Language Service's `getSuggestionDiagnostics()` API to detect deprecated usages (diagnostic codes 6385, 6386, 6387). This provides accurate detection based on TypeScript's type analysis.
 
+## CLI Tool
+
+The deprecation scanning functionality is also available as a standalone CLI tool:
+
+```bash
+# Scan current directory
+npx @deprecation-lens/cli
+
+# Scan with options
+npx @deprecation-lens/cli -i "src/**/*.ts" -f json -o report.json
+```
+
+See [@deprecation-lens/cli](./packages/cli/README.md) for full documentation.
+
 ## Development
 
-This is a monorepo with two packages:
+This is a monorepo with three packages:
 
+- `packages/cli` - CLI tool and programmatic API ([docs](./packages/cli/README.md))
 - `packages/core` - VSCode extension core (TypeScript)
 - `packages/ui` - WebView UI (Vite + TypeScript)
 

@@ -30,11 +30,7 @@ export function activate(context: vscode.ExtensionContext) {
     },
   )
 
-  context.subscriptions.push(
-    diagnosticsReporter,
-    globalWebviewDisposable,
-    gotoCommand,
-  )
+  context.subscriptions.push(diagnosticsReporter, globalWebviewDisposable, gotoCommand)
 
   console.info('[Deprecation Lens] Extension activated successfully')
 }

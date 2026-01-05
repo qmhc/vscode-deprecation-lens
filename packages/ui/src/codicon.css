@@ -23,7 +23,15 @@
   user-select: none;
 }
 
-.codicon-chevron-right::before { content: '\eab6'; }
-.codicon-chevron-down::before { content: '\eab4'; }
-.codicon-file::before { content: '\eb60'; }
-.codicon-warning::before { content: '\ea6c'; }
+.codicon-chevron-right::before {
+  content: '\eab6';
+}
+.codicon-chevron-down::before {
+  content: '\eab4';
+}
+.codicon-file::before {
+  content: '\eb60';
+}
+.codicon-warning::before {
+  content: '\ea6c';
+}

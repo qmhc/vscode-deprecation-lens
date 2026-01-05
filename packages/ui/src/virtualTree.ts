@@ -92,7 +92,6 @@ export class VirtualTree {
     })
   }
 
-
   setData(data: ScanResultData): void {
     this.rawData = data
     this.expandedFiles.clear()
@@ -234,7 +233,6 @@ export class VirtualTree {
     return row
   }
 
-
   private toggleExpand(uri: string): void {
     if (this.expandedFiles.has(uri)) {
       this.expandedFiles.delete(uri)
@@ -290,9 +288,7 @@ export class VirtualTree {
         if (node?.type === 'file' && node.expanded) {
           this.toggleExpand(node.uri)
         } else if (node?.type === 'usage') {
-          const parentIndex = this.flatNodes.findIndex(
-            n => n.type === 'file' && n.uri === node.uri,
-          )
+          const parentIndex = this.flatNodes.findIndex(n => n.type === 'file' && n.uri === node.uri)
           if (parentIndex >= 0) {
             this.setFocus(parentIndex)
           }

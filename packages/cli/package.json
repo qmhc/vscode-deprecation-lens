@@ -1,0 +1,64 @@
+{
+  "name": "@deprecation-lens/cli",
+  "version": "0.0.0",
+  "type": "module",
+  "license": "MIT",
+  "author": "qmhc",
+  "description": "CLI tool for scanning TypeScript deprecation usages.",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "bin": {
+    "deprecation-scanner": "./bin/deprecation-scanner.js",
+    "dps": "./bin/deprecation-scanner.js"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "bin",
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "typescript",
+    "deprecation",
+    "scanner",
+    "cli",
+    "lint"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qmhc/vscode-deprecation-lens",
+    "directory": "packages/cli"
+  },
+  "dependencies": {
+    "cac": "^6.7.14",
+    "minimatch": "^10.0.1",
+    "picocolors": "^1.1.1",
+    "typescript": "~5.9.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.3",
+    "fast-check": "^4.5.3",
+    "tsup": "^8.5.0",
+    "vitest": "^4.0.16"
+  }
+}

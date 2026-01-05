@@ -1,22 +1,22 @@
 {
   "name": "deprecation-lens",
   "version": "1.1.0",
-  "author": "qmhc",
   "packageManager": "pnpm@10.26.2",
   "license": "MIT",
+  "author": "qmhc",
   "description": "Dynamically collect and display all deprecated usages in your project.",
   "scripts": {
+    "build": "pnpm -C packages/cli run build && pnpm run compile && pnpm run compile:ui",
+    "changeset": "changeset",
     "compile": "tsx scripts/build.ts",
     "compile:ui": "pnpm -C packages/ui run build",
-    "build": "pnpm run compile && pnpm run compile:ui",
-    "watch": "tsx scripts/build.ts --watch",
     "lint": "eslint --cache \"**/*.{js,cjs,mjs,ts,tsx}\"",
     "prettier": "prettier --write \"**/*.{js,cjs,mjs,ts,tsx,json,css,scss,html,md}\"",
+    "release": "vsce publish --no-dependencies",
     "test": "vitest run",
-    "vscode:prepublish": "pnpm run build",
-    "changeset": "changeset",
     "version": "changeset version",
-    "release": "vsce publish --no-dependencies"
+    "vscode:prepublish": "pnpm run build",
+    "watch": "tsx scripts/build.ts --watch"
   },
   "main": "./dist/extension.js",
   "engines": {
@@ -55,9 +55,14 @@
   "categories": [
     "Linters"
   ],
-  "icon": "assets/logo.png",
   "publisher": "qmhc",
   "contributes": {
+    "commands": [
+      {
+        "command": "deprecationLens.gotoLocation",
+        "title": "Go to Location"
+      }
+    ],
     "configuration": {
       "title": "Deprecation Lens",
       "properties": {
@@ -73,21 +78,6 @@
         }
       }
     },
-    "commands": [
-      {
-        "command": "deprecationLens.gotoLocation",
-        "title": "Go to Location"
-      }
-    ],
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "deprecationLens",
-          "title": "Deprecation Lens",
-          "icon": "assets/view-icon.svg"
-        }
-      ]
-    },
     "views": {
       "deprecationLens": [
         {
@@ -96,9 +86,19 @@
           "name": "Project Deprecations"
         }
       ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "deprecationLens",
+          "title": "Deprecation Lens",
+          "icon": "assets/view-icon.svg"
+        }
+      ]
     }
   },
   "activationEvents": [
     "onStartupFinished"
-  ]
+  ],
+  "icon": "assets/logo.png"
 }
