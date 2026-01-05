@@ -115,10 +115,6 @@ importers:
         version: 1.107.0
 
   packages/ui:
-    dependencies:
-      '@tanstack/virtual-core':
-        specifier: ^3.13.6
-        version: 3.13.13
     devDependencies:
       typescript:
         specifier: ~5.9.3
@@ -914,9 +910,6 @@ packages:
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     peerDependencies:
       eslint: '>=9.0.0'
-
-  '@tanstack/virtual-core@3.13.13':
-    resolution: {integrity: sha512-uQFoSdKKf5S8k51W5t7b2qpfkyIbdHMzAn+AMQvHPxKUPeo1SsGaA4JRISQT87jm28b7z8OEqPcg1IOZagQHcA==}
 
   '@textlint/ast-node-types@15.5.0':
     resolution: {integrity: sha512-K0LEuuTo4rza8yDrlYkRdXLao8Iz/QBMsQdIxRrOOrLYb4HAtZaypZ78c+J6rDA1UlGxadZVLmkkiv4KV5fMKQ==}
@@ -4576,8 +4569,6 @@ snapshots:
       espree: 10.4.0
       estraverse: 5.3.0
       picomatch: 4.0.3
-
-  '@tanstack/virtual-core@3.13.13': {}
 
   '@textlint/ast-node-types@15.5.0': {}
 
