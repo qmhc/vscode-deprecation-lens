@@ -1,5 +1,16 @@
 # @deprecation-lens/core
 
+## 1.2.0
+
+### Minor Changes
+
+- f7a58da: Refactor to use cli package.
+
+### Patch Changes
+
+- Updated dependencies [f7a58da]
+  - @deprecation-lens/cli@1.0.0
+
 ## 1.1.0
 
 ### Minor Changes
