@@ -12,7 +12,7 @@
     "compile:ui": "pnpm -C packages/ui run build",
     "lint": "eslint --cache \"**/*.{js,cjs,mjs,ts,tsx}\"",
     "prettier": "prettier --write \"**/*.{js,cjs,mjs,ts,tsx,json,css,scss,html,md}\"",
-    "release": "vsce publish --no-dependencies",
+    "release": "pnpm -C packages/cli publish --access public --no-git-checks && vsce publish --no-dependencies",
     "test": "vitest run",
     "version": "changeset version",
     "vscode:prepublish": "pnpm run build",
