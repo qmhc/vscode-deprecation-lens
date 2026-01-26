@@ -16,11 +16,16 @@ export class App {
 
   private includeInput!: HTMLInputElement
   private excludeInput!: HTMLInputElement
+  private msgGrepInput!: HTMLInputElement
+  private msgGrepCaseSensitiveBtn!: HTMLButtonElement
+  private msgGrepRegexBtn!: HTMLButtonElement
   private scanBtn!: HTMLButtonElement
   private statsEl!: HTMLElement
   private treeContainer!: HTMLElement
 
   private isScanning = false
+  private msgGrepCaseSensitive = false
+  private msgGrepIsRegex = false
 
   constructor(container: HTMLElement, vscode: VsCodeApi) {
     this.container = container
@@ -42,6 +47,14 @@ export class App {
           <label>Files to exclude</label>
           <input type="text" id="excludePattern" placeholder="e.g., **/*.test.ts">
         </div>
+        <div class="input-group">
+          <label>Message filter</label>
+          <div class="input-with-toggles">
+            <input type="text" id="msgGrepInput" placeholder="Filter by message (comma-separated)">
+            <button type="button" id="msgGrepCaseSensitiveBtn" class="toggle-btn" title="Match Case">Aa</button>
+            <button type="button" id="msgGrepRegexBtn" class="toggle-btn" title="Use Regular Expression">.*</button>
+          </div>
+        </div>
         <button class="btn-scan" id="scanBtn">Start Scan</button>
       </div>
       <div class="stats" id="stats">Click "Start Scan" to scan the project</div>
@@ -50,6 +63,9 @@ export class App {
 
     this.includeInput = this.container.querySelector('#includePattern')!
     this.excludeInput = this.container.querySelector('#excludePattern')!
+    this.msgGrepInput = this.container.querySelector('#msgGrepInput')!
+    this.msgGrepCaseSensitiveBtn = this.container.querySelector('#msgGrepCaseSensitiveBtn')!
+    this.msgGrepRegexBtn = this.container.querySelector('#msgGrepRegexBtn')!
     this.scanBtn = this.container.querySelector('#scanBtn')!
     this.statsEl = this.container.querySelector('#stats')!
     this.treeContainer = this.container.querySelector('#treeContainer')!
@@ -66,10 +82,26 @@ export class App {
     this.excludeInput.addEventListener('keydown', e => {
       if (e.key === 'Enter') this.startScan()
     })
+    this.msgGrepInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') this.startScan()
+    })
 
     // 输入变化时通知扩展端缓存
     this.includeInput.addEventListener('input', () => this.notifyPatternChange())
     this.excludeInput.addEventListener('input', () => this.notifyPatternChange())
+    this.msgGrepInput.addEventListener('input', () => this.notifyPatternChange())
+
+    // 开关按钮
+    this.msgGrepCaseSensitiveBtn.addEventListener('click', () => {
+      this.msgGrepCaseSensitive = !this.msgGrepCaseSensitive
+      this.msgGrepCaseSensitiveBtn.classList.toggle('active', this.msgGrepCaseSensitive)
+      this.notifyPatternChange()
+    })
+    this.msgGrepRegexBtn.addEventListener('click', () => {
+      this.msgGrepIsRegex = !this.msgGrepIsRegex
+      this.msgGrepRegexBtn.classList.toggle('active', this.msgGrepIsRegex)
+      this.notifyPatternChange()
+    })
 
     // 监听扩展消息
     window.addEventListener('message', e => this.handleMessage(e.data as ExtensionMessage))
@@ -80,6 +112,9 @@ export class App {
       type: 'patternChange',
       includePattern: this.includeInput.value,
       excludePattern: this.excludeInput.value,
+      msgGrep: this.msgGrepInput.value,
+      msgGrepCaseSensitive: this.msgGrepCaseSensitive,
+      msgGrepIsRegex: this.msgGrepIsRegex,
     })
   }
 
@@ -94,6 +129,9 @@ export class App {
       type: 'startScan',
       includePattern: this.includeInput.value,
       excludePattern: this.excludeInput.value,
+      msgGrep: this.msgGrepInput.value,
+      msgGrepCaseSensitive: this.msgGrepCaseSensitive,
+      msgGrepIsRegex: this.msgGrepIsRegex,
     })
   }
 
@@ -102,6 +140,11 @@ export class App {
       case 'config':
         this.includeInput.value = message.includePattern
         this.excludeInput.value = message.excludePattern
+        this.msgGrepInput.value = message.msgGrep
+        this.msgGrepCaseSensitive = message.msgGrepCaseSensitive
+        this.msgGrepIsRegex = message.msgGrepIsRegex
+        this.msgGrepCaseSensitiveBtn.classList.toggle('active', this.msgGrepCaseSensitive)
+        this.msgGrepRegexBtn.classList.toggle('active', this.msgGrepIsRegex)
         break
 
       case 'scanStart':

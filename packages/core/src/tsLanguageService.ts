@@ -17,6 +17,9 @@ import type { DeprecatedUsage, FileDeprecations } from './types'
 interface ScanOptions {
   includePattern?: string,
   excludePattern?: string,
+  msgGrep?: string[],
+  msgGrepCaseSensitive?: boolean,
+  msgGrepIsRegex?: boolean,
   onProgress?: (message: string) => void,
   onResult?: (file: FileDeprecations) => void,
   signal?: AbortSignal,
@@ -49,7 +52,16 @@ export async function scanWithLanguageService(
   workspaceFolder: vscode.WorkspaceFolder,
   options: ScanOptions = {},
 ): Promise<FileDeprecations[]> {
-  const { includePattern, excludePattern, onProgress, onResult, signal } = options
+  const {
+    includePattern,
+    excludePattern,
+    msgGrep,
+    msgGrepCaseSensitive,
+    msgGrepIsRegex,
+    onProgress,
+    onResult,
+    signal,
+  } = options
   const rootPath = workspaceFolder.uri.fsPath
 
   console.info('[Deprecation Lens] Scanning workspace:', rootPath)
@@ -59,6 +71,9 @@ export async function scanWithLanguageService(
     rootDir: rootPath,
     include: includePattern,
     exclude: excludePattern,
+    msgGrep,
+    msgGrepCaseSensitive,
+    msgGrepIsRegex,
     onProgress,
     signal,
   }

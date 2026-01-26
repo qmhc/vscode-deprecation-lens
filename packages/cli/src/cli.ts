@@ -12,6 +12,7 @@ import pc from 'picocolors'
 import { scan } from './scanner'
 import { type OutputFormat, formatResults } from './reporter'
 import { VERSION } from './index'
+import { splitCommaSeparated } from './utils'
 
 // ============================================================================
 // 类型定义
@@ -23,6 +24,9 @@ interface CliOptions {
   fromPackage?: string,
   format?: string,
   output?: string,
+  msgGrep?: string,
+  msgGrepCaseSensitive?: boolean,
+  msgGrepRegex?: boolean,
 }
 
 // ============================================================================
@@ -71,12 +75,10 @@ async function runScan(path: string | undefined, options: CliOptions): Promise<v
   }
 
   // 解析 fromPackage 选项（逗号分隔）
-  const fromPackages = options.fromPackage
-    ? options.fromPackage
-      .split(',')
-      .map(p => p.trim())
-      .filter(Boolean)
-    : undefined
+  const fromPackages = splitCommaSeparated(options.fromPackage)
+
+  // 解析 msgGrep 选项（逗号分隔）
+  const msgGrep = splitCommaSeparated(options.msgGrep)
 
   // 创建进度回调
   const onProgress = createProgressCallback()
@@ -88,6 +90,9 @@ async function runScan(path: string | undefined, options: CliOptions): Promise<v
       include: options.include,
       exclude: options.exclude,
       fromPackages,
+      msgGrep,
+      msgGrepCaseSensitive: options.msgGrepCaseSensitive,
+      msgGrepIsRegex: options.msgGrepRegex,
       onProgress,
     })
 
@@ -136,6 +141,9 @@ cli
   .option('-i, --include <pattern>', 'Include file pattern (glob)')
   .option('-e, --exclude <pattern>', 'Exclude file pattern (glob)')
   .option('-p, --from-package <packages>', 'Filter by source packages (comma-separated)')
+  .option('-m, --msg-grep <patterns>', 'Filter by message content (comma-separated)')
+  .option('--msg-grep-case-sensitive', 'Enable case-sensitive message matching')
+  .option('--msg-grep-regex', 'Treat message patterns as regular expressions')
   .option('-f, --format <format>', 'Output format: log, json, markdown, html', { default: 'log' })
   .option('-o, --output <file>', 'Write results to file instead of stdout')
   .example('  $ deprecation-scanner')
@@ -143,6 +151,8 @@ cli
   .example('  $ deprecation-scanner -i "src/**/*.ts" -e "**/*.spec.ts"')
   .example('  $ deprecation-scanner -p lodash,moment -f json')
   .example('  $ deprecation-scanner -f markdown -o report.md')
+  .example('  $ deprecation-scanner -m "deprecated,obsolete"')
+  .example('  $ deprecation-scanner -m "use.*instead" --msg-grep-regex')
   .action(runScan)
 
 cli.help()

@@ -44,14 +44,35 @@ export type ExtensionMessage =
   | { type: 'scanProgress', message: string }
   | { type: 'scanStart' }
   | { type: 'scanEnd', totalUsages: number, totalFiles: number }
-  | { type: 'config', includePattern: string, excludePattern: string }
+  | {
+    type: 'config',
+    includePattern: string,
+    excludePattern: string,
+    msgGrep: string,
+    msgGrepCaseSensitive: boolean,
+    msgGrepIsRegex: boolean,
+  }
 
 /**
  * Webview -> 扩展 消息
  */
 export type WebviewMessage =
-  | { type: 'startScan', includePattern: string, excludePattern: string }
+  | {
+    type: 'startScan',
+    includePattern: string,
+    excludePattern: string,
+    msgGrep: string,
+    msgGrepCaseSensitive: boolean,
+    msgGrepIsRegex: boolean,
+  }
   | { type: 'cancelScan' }
-  | { type: 'patternChange', includePattern: string, excludePattern: string }
+  | {
+    type: 'patternChange',
+    includePattern: string,
+    excludePattern: string,
+    msgGrep: string,
+    msgGrepCaseSensitive: boolean,
+    msgGrepIsRegex: boolean,
+  }
   | { type: 'gotoLocation', uri: string, line: number, col: number }
   | { type: 'ready' }

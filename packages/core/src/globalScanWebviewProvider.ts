@@ -37,6 +37,9 @@ export class GlobalScanWebviewProvider implements vscode.WebviewViewProvider {
   // 缓存当前输入的 pattern
   private cachedIncludePattern = ''
   private cachedExcludePattern = ''
+  private cachedMsgGrep = ''
+  private cachedMsgGrepCaseSensitive = false
+  private cachedMsgGrepIsRegex = false
 
   constructor(extensionUri: vscode.Uri) {
     this.extensionUri = extensionUri
@@ -63,11 +66,20 @@ export class GlobalScanWebviewProvider implements vscode.WebviewViewProvider {
           this.sendConfig()
           break
         case 'startScan':
-          await this.startScan(message.includePattern, message.excludePattern)
+          await this.startScan(
+            message.includePattern,
+            message.excludePattern,
+            message.msgGrep,
+            message.msgGrepCaseSensitive,
+            message.msgGrepIsRegex,
+          )
           break
         case 'patternChange':
           this.cachedIncludePattern = message.includePattern
           this.cachedExcludePattern = message.excludePattern
+          this.cachedMsgGrep = message.msgGrep
+          this.cachedMsgGrepCaseSensitive = message.msgGrepCaseSensitive
+          this.cachedMsgGrepIsRegex = message.msgGrepIsRegex
           break
         case 'cancelScan':
           this.cancelScan()
@@ -89,6 +101,9 @@ export class GlobalScanWebviewProvider implements vscode.WebviewViewProvider {
       type: 'config',
       includePattern,
       excludePattern,
+      msgGrep: this.cachedMsgGrep,
+      msgGrepCaseSensitive: this.cachedMsgGrepCaseSensitive,
+      msgGrepIsRegex: this.cachedMsgGrepIsRegex,
     })
 
     // 恢复缓存的扫描结果
@@ -102,7 +117,13 @@ export class GlobalScanWebviewProvider implements vscode.WebviewViewProvider {
     }
   }
 
-  private async startScan(includePattern: string, excludePattern: string): Promise<void> {
+  private async startScan(
+    includePattern: string,
+    excludePattern: string,
+    msgGrep: string,
+    msgGrepCaseSensitive: boolean,
+    msgGrepIsRegex: boolean,
+  ): Promise<void> {
     if (this.isScanning || !this.view) return
 
     const workspaceFolders = vscode.workspace.workspaceFolders
@@ -122,6 +143,11 @@ export class GlobalScanWebviewProvider implements vscode.WebviewViewProvider {
 
     const allResults: FileDeprecations[] = []
 
+    // 解析 msgGrep 为数组
+    const msgGrepPatterns = msgGrep
+      ? msgGrep.split(',').map(s => s.trim()).filter(s => s.length > 0)
+      : undefined
+
     for (const folder of workspaceFolders) {
       this.view.webview.postMessage({
         type: 'scanProgress',
@@ -132,6 +158,9 @@ export class GlobalScanWebviewProvider implements vscode.WebviewViewProvider {
         const results = await scanWithLanguageService(folder, {
           includePattern: includePattern || undefined,
           excludePattern: excludePattern || undefined,
+          msgGrep: msgGrepPatterns,
+          msgGrepCaseSensitive,
+          msgGrepIsRegex,
           signal: this.abortController?.signal,
           onProgress: message => {
             this.view?.webview.postMessage({ type: 'scanProgress', message })

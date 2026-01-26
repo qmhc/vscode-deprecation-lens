@@ -73,6 +73,12 @@ export interface ScanOptions {
   exclude?: string,
   /** 只查找来自指定包的弃用 */
   fromPackages?: string[],
+  /** 消息搜索模式列表（任一匹配即保留） */
+  msgGrep?: string[],
+  /** 消息搜索是否大小写敏感，默认 false */
+  msgGrepCaseSensitive?: boolean,
+  /** 消息搜索是否使用正则表达式，默认 false */
+  msgGrepIsRegex?: boolean,
   /** 进度回调 */
   onProgress?: (message: string) => void,
   /** 单文件结果回调（流式处理） */

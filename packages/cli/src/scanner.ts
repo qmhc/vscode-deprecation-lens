@@ -83,6 +83,55 @@ export function filterUsagesByPackages(
 }
 
 /**
+ * 根据消息内容过滤弃用用法
+ * 支持多模式 OR 匹配、大小写控制、正则表达式模式
+ *
+ * @param usages - 弃用用法列表
+ * @param patterns - 搜索模式列表（任一匹配即保留）
+ * @param caseSensitive - 是否大小写敏感，默认 false
+ * @param isRegex - 是否作为正则表达式处理，默认 false
+ * @returns 过滤后的弃用用法列表
+ * @throws Error 当 isRegex 为 true 且模式语法无效时
+ */
+export function filterUsagesByMessage(
+  usages: DeprecatedUsage[],
+  patterns: string[],
+  caseSensitive = false,
+  isRegex = false,
+): DeprecatedUsage[] {
+  // 空模式数组或 undefined 时返回所有结果
+  if (!patterns || patterns.length === 0) {
+    return usages
+  }
+
+  // 预编译正则表达式（如果启用正则模式）
+  const matchers: ((message: string) => boolean)[] = patterns.map(pattern => {
+    if (isRegex) {
+      // 正则表达式模式
+      try {
+        const flags = caseSensitive ? '' : 'i'
+        const regex = new RegExp(pattern, flags)
+        return (message: string) => regex.test(message)
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        throw new Error(`Invalid regular expression pattern "${pattern}": ${errorMessage}`)
+      }
+    } else {
+      // 普通字符串匹配
+      if (caseSensitive) {
+        return (message: string) => message.includes(pattern)
+      } else {
+        const lowerPattern = pattern.toLowerCase()
+        return (message: string) => message.toLowerCase().includes(lowerPattern)
+      }
+    }
+  })
+
+  // 过滤：任一模式匹配即保留（OR 逻辑）
+  return usages.filter(usage => matchers.some(matcher => matcher(usage.message)))
+}
+
+/**
  * 递归获取目录下所有文件
  */
 function getAllFiles(dir: string, patterns: string[], excludePatterns: string[]): string[] {
@@ -165,6 +214,9 @@ export async function scan(options: ScanOptions = {}): Promise<ScanResult> {
     include,
     exclude,
     fromPackages,
+    msgGrep,
+    msgGrepCaseSensitive,
+    msgGrepIsRegex,
     onProgress,
     onFile,
     signal,
@@ -385,12 +437,31 @@ export async function scan(options: ScanOptions = {}): Promise<ScanResult> {
 
   languageService.dispose()
 
+  // 应用消息过滤（在弃用检测完成后）
+  let filteredResults = fileResults
+  if (msgGrep && msgGrep.length > 0) {
+    filteredResults = fileResults
+      .map(file => ({
+        ...file,
+        usages: filterUsagesByMessage(
+          file.usages,
+          msgGrep,
+          msgGrepCaseSensitive ?? false,
+          msgGrepIsRegex ?? false,
+        ),
+      }))
+      .filter(file => file.usages.length > 0)
+  }
+
+  // 重新计算 totalUsages
+  const filteredTotalUsages = filteredResults.reduce((sum, file) => sum + file.usages.length, 0)
+
   // 按文件路径排序
-  fileResults.sort((a, b) => a.filePath.localeCompare(b.filePath))
+  filteredResults.sort((a, b) => a.filePath.localeCompare(b.filePath))
 
   return {
-    files: fileResults,
-    totalUsages,
+    files: filteredResults,
+    totalUsages: filteredTotalUsages,
     scannedFiles: totalFiles,
   }
 }
