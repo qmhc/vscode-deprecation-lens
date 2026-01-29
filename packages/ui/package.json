@@ -8,9 +8,13 @@
     "dev": "vite",
     "preview": "vite preview"
   },
+  "dependencies": {
+    "solid-js": "^1.9.5"
+  },
   "devDependencies": {
     "typescript": "~5.9.3",
     "vite": "^6.3.5",
+    "vite-plugin-solid": "^2.11.6",
     "vite-plugin-static-copy": "^3.1.4"
   }
 }

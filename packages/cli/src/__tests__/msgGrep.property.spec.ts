@@ -79,9 +79,7 @@ describe('Property 1: 消息过滤正确性', () => {
 
           // 验证：每个过滤后的结果都包含至少一个模式（大小写不敏感）
           return filtered.every(usage =>
-            patterns.some(pattern =>
-              usage.message.toLowerCase().includes(pattern.toLowerCase()),
-            ),
+            patterns.some(pattern => usage.message.toLowerCase().includes(pattern.toLowerCase())),
           )
         },
       ),
@@ -98,9 +96,7 @@ describe('Property 1: 消息过滤正确性', () => {
           const filtered = filterUsagesByMessage(usages, patterns, true, false)
 
           // 验证：每个过滤后的结果都包含至少一个模式（大小写敏感）
-          return filtered.every(usage =>
-            patterns.some(pattern => usage.message.includes(pattern)),
-          )
+          return filtered.every(usage => patterns.some(pattern => usage.message.includes(pattern)))
         },
       ),
       { numRuns: 100 },
@@ -109,13 +105,10 @@ describe('Property 1: 消息过滤正确性', () => {
 
   it('空模式数组返回所有结果', () => {
     fc.assert(
-      fc.property(
-        fc.array(deprecatedUsageArb(), { minLength: 0, maxLength: 10 }),
-        usages => {
-          const filtered = filterUsagesByMessage(usages, [], false, false)
-          return filtered.length === usages.length
-        },
-      ),
+      fc.property(fc.array(deprecatedUsageArb(), { minLength: 0, maxLength: 10 }), usages => {
+        const filtered = filterUsagesByMessage(usages, [], false, false)
+        return filtered.length === usages.length
+      }),
       { numRuns: 100 },
     )
   })
@@ -138,7 +131,6 @@ describe('Property 1: 消息过滤正确性', () => {
     )
   })
 })
-
 
 // ============================================================================
 // Property 2: 大小写敏感性控制
@@ -215,26 +207,22 @@ describe('Property 2: 大小写敏感性控制', () => {
 
   it('caseSensitive=true 时，精确匹配应通过', () => {
     fc.assert(
-      fc.property(
-        fc.stringMatching(/^[a-zA-Z]{3,10}$/),
-        pattern => {
-          const message = `'${pattern}' is deprecated.`
-          const usage: DeprecatedUsage = {
-            filePath: '/src/test.ts',
-            range: { start: { line: 0, character: 0 }, end: { line: 0, character: 10 } },
-            message,
-          }
+      fc.property(fc.stringMatching(/^[a-zA-Z]{3,10}$/), pattern => {
+        const message = `'${pattern}' is deprecated.`
+        const usage: DeprecatedUsage = {
+          filePath: '/src/test.ts',
+          range: { start: { line: 0, character: 0 }, end: { line: 0, character: 10 } },
+          message,
+        }
 
-          // 使用相同模式搜索，应该匹配
-          const filtered = filterUsagesByMessage([usage], [pattern], true, false)
-          return filtered.length === 1
-        },
-      ),
+        // 使用相同模式搜索，应该匹配
+        const filtered = filterUsagesByMessage([usage], [pattern], true, false)
+        return filtered.length === 1
+      }),
       { numRuns: 100 },
     )
   })
 })
-
 
 // ============================================================================
 // Property 3: 正则表达式模式控制
@@ -275,25 +263,22 @@ describe('Property 3: 正则表达式模式控制', () => {
 
   it('isRegex=true 时，正则表达式应正确匹配', () => {
     fc.assert(
-      fc.property(
-        fc.stringMatching(/^[a-z]{3,8}$/),
-        word => {
-          // 创建消息
-          const message = `'${word}Method' is deprecated.`
-          const usage: DeprecatedUsage = {
-            filePath: '/src/test.ts',
-            range: { start: { line: 0, character: 0 }, end: { line: 0, character: 10 } },
-            message,
-          }
+      fc.property(fc.stringMatching(/^[a-z]{3,8}$/), word => {
+        // 创建消息
+        const message = `'${word}Method' is deprecated.`
+        const usage: DeprecatedUsage = {
+          filePath: '/src/test.ts',
+          range: { start: { line: 0, character: 0 }, end: { line: 0, character: 10 } },
+          message,
+        }
 
-          // 使用正则表达式模式
-          const pattern = `${word}.*deprecated`
-          const filtered = filterUsagesByMessage([usage], [pattern], false, true)
+        // 使用正则表达式模式
+        const pattern = `${word}.*deprecated`
+        const filtered = filterUsagesByMessage([usage], [pattern], false, true)
 
-          // 应该匹配
-          return filtered.length === 1
-        },
-      ),
+        // 应该匹配
+        return filtered.length === 1
+      }),
       { numRuns: 100 },
     )
   })
@@ -333,7 +318,6 @@ describe('Property 3: 正则表达式模式控制', () => {
   })
 })
 
-
 // ============================================================================
 // Property 5: 无效正则错误处理
 // ============================================================================
@@ -347,34 +331,31 @@ describe('Property 3: 正则表达式模式控制', () => {
 describe('Property 5: 无效正则错误处理', () => {
   it('无效正则表达式应抛出描述性错误', () => {
     fc.assert(
-      fc.property(
-        fc.constantFrom('[', '(', '{', '*', '+', '?', '\\'),
-        invalidPattern => {
-          const usage: DeprecatedUsage = {
-            filePath: '/src/test.ts',
-            range: { start: { line: 0, character: 0 }, end: { line: 0, character: 10 } },
-            message: `'method' is deprecated.`,
-          }
+      fc.property(fc.constantFrom('[', '(', '{', '*', '+', '?', '\\'), invalidPattern => {
+        const usage: DeprecatedUsage = {
+          filePath: '/src/test.ts',
+          range: { start: { line: 0, character: 0 }, end: { line: 0, character: 10 } },
+          message: `'method' is deprecated.`,
+        }
 
+        try {
+          filterUsagesByMessage([usage], [invalidPattern], false, true)
+          // 如果没有抛出错误，检查是否是有效的正则（某些单字符可能是有效的）
           try {
-            filterUsagesByMessage([usage], [invalidPattern], false, true)
-            // 如果没有抛出错误，检查是否是有效的正则（某些单字符可能是有效的）
-            try {
-              new RegExp(invalidPattern)
-              return true // 是有效正则，测试通过
-            } catch {
-              return false // 应该抛出错误但没有
-            }
-          } catch (error) {
-            // 验证错误消息包含模式信息
-            const errorMessage = error instanceof Error ? error.message : String(error)
-            return (
-              errorMessage.includes('Invalid regular expression') &&
-              errorMessage.includes(invalidPattern)
-            )
+            new RegExp(invalidPattern)
+            return true // 是有效正则，测试通过
+          } catch {
+            return false // 应该抛出错误但没有
           }
-        },
-      ),
+        } catch (error) {
+          // 验证错误消息包含模式信息
+          const errorMessage = error instanceof Error ? error.message : String(error)
+          return (
+            errorMessage.includes('Invalid regular expression') &&
+            errorMessage.includes(invalidPattern)
+          )
+        }
+      }),
       { numRuns: 100 },
     )
   })
@@ -405,29 +386,25 @@ describe('Property 5: 无效正则错误处理', () => {
 
   it('isRegex=false 时，无效正则模式不应抛出错误', () => {
     fc.assert(
-      fc.property(
-        fc.constantFrom('[', '(', '{', '*', '+', '?', '\\'),
-        invalidPattern => {
-          const usage: DeprecatedUsage = {
-            filePath: '/src/test.ts',
-            range: { start: { line: 0, character: 0 }, end: { line: 0, character: 10 } },
-            message: `'method' is deprecated.`,
-          }
+      fc.property(fc.constantFrom('[', '(', '{', '*', '+', '?', '\\'), invalidPattern => {
+        const usage: DeprecatedUsage = {
+          filePath: '/src/test.ts',
+          range: { start: { line: 0, character: 0 }, end: { line: 0, character: 10 } },
+          message: `'method' is deprecated.`,
+        }
 
-          // isRegex=false 时不应抛出错误
-          try {
-            filterUsagesByMessage([usage], [invalidPattern], false, false)
-            return true
-          } catch {
-            return false
-          }
-        },
-      ),
+        // isRegex=false 时不应抛出错误
+        try {
+          filterUsagesByMessage([usage], [invalidPattern], false, false)
+          return true
+        } catch {
+          return false
+        }
+      }),
       { numRuns: 100 },
     )
   })
 })
-
 
 // ============================================================================
 // Property 4: 模式分割正确性
@@ -496,26 +473,20 @@ describe('Property 4: 模式分割正确性', () => {
 
   it('只有空白和逗号的字符串应返回 undefined', () => {
     fc.assert(
-      fc.property(
-        fc.stringMatching(/^[, ]{1,10}$/),
-        input => {
-          const result = splitCommaSeparated(input)
-          return result === undefined
-        },
-      ),
+      fc.property(fc.stringMatching(/^[, ]{1,10}$/), input => {
+        const result = splitCommaSeparated(input)
+        return result === undefined
+      }),
       { numRuns: 100 },
     )
   })
 
   it('单个值（无逗号）应返回单元素数组', () => {
     fc.assert(
-      fc.property(
-        fc.stringMatching(/^[a-zA-Z0-9_-]{1,10}$/),
-        value => {
-          const result = splitCommaSeparated(value)
-          return result !== undefined && result.length === 1 && result[0] === value
-        },
-      ),
+      fc.property(fc.stringMatching(/^[a-zA-Z0-9_-]{1,10}$/), value => {
+        const result = splitCommaSeparated(value)
+        return result !== undefined && result.length === 1 && result[0] === value
+      }),
       { numRuns: 100 },
     )
   })

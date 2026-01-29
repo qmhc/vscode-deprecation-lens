@@ -1,11 +1,16 @@
+/* @refresh reload */
+import { render } from 'solid-js/web'
+
 import './codicon.css'
 import './styles.css'
 
 import { App } from './App'
 
+import type { WebviewMessage } from './types'
+
 // 获取 VSCode API
 declare function acquireVsCodeApi(): {
-  postMessage(message: unknown): void,
+  postMessage(message: WebviewMessage): void,
   getState(): unknown,
   setState(state: unknown): void,
 }
@@ -19,8 +24,11 @@ if (hostPadding === 0) {
   document.body.classList.add('no-host-padding')
 }
 
-// 初始化应用
-new App(document.getElementById('app')!, vscode)
+// 渲染应用
+const root = document.getElementById('app')
+if (root) {
+  render(() => <App vscode={vscode} />, root)
+}
 
 // 通知扩展 Webview 已就绪
 vscode.postMessage({ type: 'ready' })

@@ -145,7 +145,10 @@ export class GlobalScanWebviewProvider implements vscode.WebviewViewProvider {
 
     // 解析 msgGrep 为数组
     const msgGrepPatterns = msgGrep
-      ? msgGrep.split(',').map(s => s.trim()).filter(s => s.length > 0)
+      ? msgGrep
+        .split(',')
+        .map(s => s.trim())
+        .filter(s => s.length > 0)
       : undefined
 
     for (const folder of workspaceFolders) {
@@ -194,7 +197,7 @@ export class GlobalScanWebviewProvider implements vscode.WebviewViewProvider {
       }
     }
 
-    // 排序并转换数据格式
+    // 排序并转换数据格式（仅用于缓存，不再发送 scanResult）
     const sortedResults = allResults.sort((a, b) => a.uri.fsPath.localeCompare(b.uri.fsPath))
 
     const scanData = {
@@ -217,12 +220,13 @@ export class GlobalScanWebviewProvider implements vscode.WebviewViewProvider {
       }),
     }
 
-    this.view.webview.postMessage({ type: 'scanResult', data: scanData })
+    // 不再发送 scanResult，流式加载已经完成
+    // this.view.webview.postMessage({ type: 'scanResult', data: scanData })
 
     const totalUsages = allResults.reduce((sum, f) => sum + f.usages.length, 0)
     const totalFiles = allResults.length
 
-    // 缓存扫描结果
+    // 缓存扫描结果（用于 WebView 重建时恢复）
     this.scanCache = { data: scanData, totalUsages, totalFiles }
 
     this.view.webview.postMessage({ type: 'scanEnd', totalUsages, totalFiles })
