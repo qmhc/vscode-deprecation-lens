@@ -20,6 +20,7 @@ interface ScanOptions {
   msgGrep?: string[],
   msgGrepCaseSensitive?: boolean,
   msgGrepIsRegex?: boolean,
+  fromPackages?: string[],
   onProgress?: (message: string) => void,
   onResult?: (file: FileDeprecations) => void,
   signal?: AbortSignal,
@@ -58,6 +59,7 @@ export async function scanWithLanguageService(
     msgGrep,
     msgGrepCaseSensitive,
     msgGrepIsRegex,
+    fromPackages,
     onProgress,
     onResult,
     signal,
@@ -74,6 +76,7 @@ export async function scanWithLanguageService(
     msgGrep,
     msgGrepCaseSensitive,
     msgGrepIsRegex,
+    fromPackages,
     onProgress,
     signal,
   }

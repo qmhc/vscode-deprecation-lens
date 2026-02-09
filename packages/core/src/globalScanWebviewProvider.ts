@@ -40,6 +40,8 @@ export class GlobalScanWebviewProvider implements vscode.WebviewViewProvider {
   private cachedMsgGrep = ''
   private cachedMsgGrepCaseSensitive = false
   private cachedMsgGrepIsRegex = false
+  private cachedFromPackages: string[] = []
+  private availablePackages: string[] = []
 
   constructor(extensionUri: vscode.Uri) {
     this.extensionUri = extensionUri
@@ -64,6 +66,7 @@ export class GlobalScanWebviewProvider implements vscode.WebviewViewProvider {
       switch (message.type) {
         case 'ready':
           this.sendConfig()
+          await this.sendPackageList()
           break
         case 'startScan':
           await this.startScan(
@@ -80,6 +83,7 @@ export class GlobalScanWebviewProvider implements vscode.WebviewViewProvider {
           this.cachedMsgGrep = message.msgGrep
           this.cachedMsgGrepCaseSensitive = message.msgGrepCaseSensitive
           this.cachedMsgGrepIsRegex = message.msgGrepIsRegex
+          this.cachedFromPackages = message.fromPackages || []
           break
         case 'cancelScan':
           this.cancelScan()
@@ -104,6 +108,7 @@ export class GlobalScanWebviewProvider implements vscode.WebviewViewProvider {
       msgGrep: this.cachedMsgGrep,
       msgGrepCaseSensitive: this.cachedMsgGrepCaseSensitive,
       msgGrepIsRegex: this.cachedMsgGrepIsRegex,
+      fromPackages: this.cachedFromPackages,
     })
 
     // 恢复缓存的扫描结果
@@ -115,6 +120,36 @@ export class GlobalScanWebviewProvider implements vscode.WebviewViewProvider {
         totalFiles: this.scanCache.totalFiles,
       })
     }
+  }
+
+  /** 扫描项目中的 package.json 获取依赖列表 */
+  private async sendPackageList(): Promise<void> {
+    if (this.availablePackages.length > 0) {
+      this.view?.webview.postMessage({ type: 'packageList', packages: this.availablePackages })
+      return
+    }
+
+    const workspaceFolders = vscode.workspace.workspaceFolders
+    if (!workspaceFolders) return
+
+    const packageSet = new Set<string>()
+
+    for (const folder of workspaceFolders) {
+      const pattern = new vscode.RelativePattern(folder, '**/package.json')
+      const files = await vscode.workspace.findFiles(pattern, '**/node_modules/**', 100)
+
+      for (const file of files) {
+        try {
+          const content = await vscode.workspace.fs.readFile(file)
+          const json = JSON.parse(Buffer.from(content).toString('utf-8'))
+          if (json.dependencies) Object.keys(json.dependencies).forEach(p => packageSet.add(p))
+          if (json.devDependencies) Object.keys(json.devDependencies).forEach(p => packageSet.add(p))
+        } catch { /* ignore */ }
+      }
+    }
+
+    this.availablePackages = Array.from(packageSet).sort()
+    this.view?.webview.postMessage({ type: 'packageList', packages: this.availablePackages })
   }
 
   private async startScan(

@@ -44,6 +44,7 @@ export type ExtensionMessage =
   | { type: 'scanProgress', message: string }
   | { type: 'scanStart' }
   | { type: 'scanEnd', totalUsages: number, totalFiles: number }
+  | { type: 'packageList', packages: string[] }
   | {
     type: 'config',
     includePattern: string,
@@ -51,6 +52,7 @@ export type ExtensionMessage =
     msgGrep: string,
     msgGrepCaseSensitive: boolean,
     msgGrepIsRegex: boolean,
+    fromPackages?: string[],
   }
 
 /**
@@ -64,6 +66,7 @@ export type WebviewMessage =
     msgGrep: string,
     msgGrepCaseSensitive: boolean,
     msgGrepIsRegex: boolean,
+    fromPackages?: string[],
   }
   | { type: 'cancelScan' }
   | {
@@ -73,6 +76,7 @@ export type WebviewMessage =
     msgGrep: string,
     msgGrepCaseSensitive: boolean,
     msgGrepIsRegex: boolean,
+    fromPackages?: string[],
   }
   | { type: 'gotoLocation', uri: string, line: number, col: number }
   | { type: 'ready' }

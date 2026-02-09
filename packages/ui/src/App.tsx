@@ -1,5 +1,6 @@
 import { scanStore } from './stores/scanStore'
 import { VirtualTree } from './components/VirtualTree'
+import { TagInput } from './components/TagInput'
 
 import type { ExtensionMessage, WebviewMessage } from './types'
 
@@ -24,7 +25,12 @@ export function App(props: AppProps) {
           msgGrep: message.msgGrep,
           msgGrepCaseSensitive: message.msgGrepCaseSensitive,
           msgGrepIsRegex: message.msgGrepIsRegex,
+          fromPackages: message.fromPackages,
         })
+        break
+
+      case 'packageList':
+        scanStore.setAvailablePackages(message.packages)
         break
 
       case 'scanStart':
@@ -150,6 +156,15 @@ export function App(props: AppProps) {
               .*
             </button>
           </div>
+        </div>
+        <div class='input-group'>
+          <label>Filter by packages</label>
+          <TagInput
+            value={scanStore.state.fromPackages}
+            suggestions={scanStore.state.availablePackages}
+            onChange={packages => scanStore.setFromPackages(packages)}
+            placeholder='e.g., lodash, moment'
+          />
         </div>
         <button class='btn-scan' onClick={handleScan}>
           {scanStore.state.isScanning ? 'Cancel' : 'Start Scan'}

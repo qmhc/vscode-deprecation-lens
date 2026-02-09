@@ -16,6 +16,8 @@ export interface ScanState {
   msgGrep: string,
   msgGrepCaseSensitive: boolean,
   msgGrepIsRegex: boolean,
+  fromPackages: string[],
+  availablePackages: string[],
   statsMessage: string,
   hasResults: boolean,
 }
@@ -28,6 +30,8 @@ const [state, setState] = createStore<ScanState>({
   msgGrep: '',
   msgGrepCaseSensitive: false,
   msgGrepIsRegex: false,
+  fromPackages: [],
+  availablePackages: [],
   statsMessage: 'Click "Start Scan" to scan the project',
   hasResults: false,
 })
@@ -89,8 +93,24 @@ function setConfig(config: {
   msgGrep: string,
   msgGrepCaseSensitive: boolean,
   msgGrepIsRegex: boolean,
+  fromPackages?: string[],
 }) {
-  setState(config)
+  setState({
+    includePattern: config.includePattern,
+    excludePattern: config.excludePattern,
+    msgGrep: config.msgGrep,
+    msgGrepCaseSensitive: config.msgGrepCaseSensitive,
+    msgGrepIsRegex: config.msgGrepIsRegex,
+    ...(config.fromPackages !== undefined && { fromPackages: config.fromPackages }),
+  })
+}
+
+function setFromPackages(packages: string[]) {
+  setState('fromPackages', packages)
+}
+
+function setAvailablePackages(packages: string[]) {
+  setState('availablePackages', packages)
 }
 
 function startScan() {
@@ -192,6 +212,8 @@ export const scanStore = {
   setFocusedIndex,
   expandedFiles,
   setConfig,
+  setFromPackages,
+  setAvailablePackages,
   startScan,
   updateProgress,
   appendFile,

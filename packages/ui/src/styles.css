@@ -25,7 +25,6 @@ body.no-host-padding {
 
 /* 搜索区域 */
 .search-panel {
-  overflow: hidden;
   flex-shrink: 0;
   border-bottom: 1px solid var(--vscode-sideBarSectionHeader-border);
 }
@@ -247,4 +246,94 @@ body.no-host-padding {
 .file-icon svg {
   width: 100%;
   height: 100%;
+}
+
+
+/* Tag Input */
+.tag-input-container {
+  position: relative;
+}
+
+.tag-input-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 6px;
+  min-height: 24px;
+  border: 1px solid var(--vscode-input-border);
+  background: var(--vscode-input-background);
+  border-radius: 2px;
+}
+
+.tag-input-wrapper:focus-within {
+  border-color: var(--vscode-focusBorder);
+}
+
+.tag-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 1px 4px;
+  background: var(--vscode-badge-background);
+  color: var(--vscode-badge-foreground);
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+.tag-remove {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.7;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.tag-remove:hover {
+  opacity: 1;
+}
+
+/* 内部 input 不继承 .input-group input 的边框 */
+.tag-input-wrapper .tag-input {
+  flex: 1;
+  min-width: 60px;
+  padding: 0;
+  border: none !important;
+  background: transparent;
+  color: var(--vscode-input-foreground);
+  font-size: 12px;
+  outline: none;
+}
+
+.tag-input-wrapper .tag-input::placeholder {
+  color: var(--vscode-input-placeholderForeground);
+}
+
+.tag-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+  max-height: 120px;
+  overflow-y: auto;
+  background: var(--vscode-dropdown-background);
+  border: 1px solid var(--vscode-dropdown-border);
+  border-radius: 2px;
+  z-index: 100;
+}
+
+.tag-suggestion-item {
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.tag-suggestion-item:hover {
+  background: var(--vscode-list-hoverBackground);
 }
