@@ -1,5 +1,17 @@
 # @deprecation-lens/core
 
+## 1.3.0
+
+### Minor Changes
+
+- 30f0dfe: Add package-based filtering for deprecation scan results with autocomplete suggestions sourced from project dependencies.
+
+### Patch Changes
+
+- ad25f2e: Add message search input with case-sensitive and regex toggles in scan panel.
+- Updated dependencies [ad25f2e]
+  - @deprecation-lens/cli@1.1.0
+
 ## 1.2.0
 
 ### Minor Changes
